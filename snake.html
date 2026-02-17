@@ -37,7 +37,9 @@
   }
   canvas {
     display: block;
-    image-rendering: pixelated;
+    width: 300px;
+    height: 300px;
+    image-rendering: auto;
   }
   .controls {
     display: flex;
@@ -89,7 +91,7 @@
       <span id="score">Score: 0</span>
     </div>
     <div class="screen-inner">
-      <canvas id="game" width="300" height="300"></canvas>
+      <canvas id="game" width="600" height="600"></canvas>
       <div class="overlay" id="overlay">
         <div>SNAKE</div>
         <div style="font-size:12px">Trykk en tast for å starte</div>
@@ -117,7 +119,7 @@ const ctx = canvas.getContext('2d');
 const overlay = document.getElementById('overlay');
 const scoreEl = document.getElementById('score');
 
-const GRID = 15;
+const GRID = 30;
 const CELL = canvas.width / GRID;
 const BG = '#a8c8e8';
 const SNAKE_COLOR = '#1a3a5c';
@@ -126,7 +128,7 @@ const FOOD_COLOR = '#0a1f3a';
 let snake, dir, nextDir, food, score, gameLoop, running;
 
 function init() {
-  snake = [{x:7,y:7},{x:6,y:7},{x:5,y:7}];
+  snake = [{x:15,y:15},{x:14,y:15},{x:13,y:15}];
   dir = {x:1,y:0};
   nextDir = {x:1,y:0};
   score = 0;
@@ -173,20 +175,41 @@ function update() {
   draw();
 }
 
+function roundRect(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+  ctx.fill();
+}
+
 function draw() {
   ctx.fillStyle = BG;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // Draw snake
   snake.forEach((s, i) => {
-    ctx.fillStyle = SNAKE_COLOR;
-    const pad = i === 0 ? 1 : 2;
-    ctx.fillRect(s.x * CELL + pad, s.y * CELL + pad, CELL - pad*2, CELL - pad*2);
+    const pad = 1;
+    const x = s.x * CELL + pad;
+    const y = s.y * CELL + pad;
+    const size = CELL - pad * 2;
+    const radius = i === 0 ? 6 : 4;
+    ctx.fillStyle = i === 0 ? '#0f2d4a' : SNAKE_COLOR;
+    roundRect(x, y, size, size, radius);
   });
 
-  // Draw food
+  // Draw food as circle
   ctx.fillStyle = FOOD_COLOR;
-  ctx.fillRect(food.x * CELL + 3, food.y * CELL + 3, CELL - 6, CELL - 6);
+  ctx.beginPath();
+  ctx.arc(food.x * CELL + CELL / 2, food.y * CELL + CELL / 2, CELL / 2 - 3, 0, Math.PI * 2);
+  ctx.fill();
 }
 
 function gameOver() {
