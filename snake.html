@@ -63,6 +63,20 @@
   }
   .dpad button:active { background: #747d8c; }
   .dpad .empty { background: transparent; }
+  .mute-btn {
+    display: block;
+    margin: 12px auto 0;
+    background: #57606f;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 18px;
+    width: 50px;
+    height: 30px;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .mute-btn:active { background: #747d8c; }
   .overlay {
     position: absolute;
     top: 0; left: 0;
@@ -112,12 +126,20 @@
       <button class="empty"></button>
     </div>
   </div>
+  <button class="mute-btn" id="muteBtn" onclick="toggleMute()">🔊</button>
 </div>
 
 <script>
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let muted = false;
+
+function toggleMute() {
+  muted = !muted;
+  document.getElementById('muteBtn').textContent = muted ? '🔇' : '🔊';
+}
 
 function playEat() {
+  if (muted) return;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
   osc.connect(gain);
@@ -148,6 +170,7 @@ const FOOD_COLOR = '#e63946';
 let snake, dir, nextDir, food, score, gameLoop, running;
 
 function playStart() {
+  if (muted) return;
   const notes = [330, 392, 494];
   notes.forEach((freq, i) => {
     const osc = audioCtx.createOscillator();
@@ -252,6 +275,7 @@ function draw() {
 }
 
 function playNewHighscore() {
+  if (muted) return;
   const notes = [523, 659, 784, 1047];
   notes.forEach((freq, i) => {
     const osc = audioCtx.createOscillator();
@@ -269,6 +293,7 @@ function playNewHighscore() {
 }
 
 function playGameOver() {
+  if (muted) return;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
   osc.connect(gain);
