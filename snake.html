@@ -233,6 +233,23 @@ function draw() {
   ctx.fill();
 }
 
+function playNewHighscore() {
+  const notes = [523, 659, 784, 1047];
+  notes.forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.type = 'square';
+    const t = audioCtx.currentTime + i * 0.12;
+    osc.frequency.setValueAtTime(freq, t);
+    gain.gain.setValueAtTime(0.2, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+    osc.start(t);
+    osc.stop(t + 0.15);
+  });
+}
+
 function playGameOver() {
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
@@ -255,6 +272,7 @@ function gameOver() {
     highscore = score;
     localStorage.setItem('snakeHighscore', highscore);
     highscoreEl.textContent = 'Best: ' + highscore;
+    playNewHighscore();
   }
   overlay.innerHTML = `<div>GAME OVER</div><div>Score: ${score}</div><div style="font-size:12px">Trykk en tast for å spille igjen</div>`;
   overlay.style.display = 'flex';
